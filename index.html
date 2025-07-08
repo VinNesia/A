@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GlobalBuzz - Latest World News</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <h1>🌍 GlobalBuzz</h1>
+    <p class="tagline">Real‑Time World News powered by NewsAPI.org</p>
+
+    <!-- Search & Category Form -->
+    <form class="search-bar" action="/" method="get">
+        <input type="text" name="q" placeholder="Search news..." value="{{ keyword or '' }}">
+        <select name="category">
+          <option value="">All Categories</option>
+          {% for cat in categories %}
+            <option value="{{ cat }}" {% if current_category==cat %}selected{% endif %}>{{ cat.title() }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit">Go</button>
+    </form>
+  </header>
+
+  <main>
+    {% for article in articles %}
+      <div class="news-card">
+        {% if article.urlToImage %}
+        <img src="{{ article.urlToImage }}" alt="Thumbnail" />
+        {% endif %}
+        <div class="news-content">
+          <h2><a href="{{ article.url }}" target="_blank">{{ article.title }}</a></h2>
+          <p>{{ article.description or "No description available." }}</p>
+          <small>{{ article.source.name }} | {{ article.publishedAt[:10] }}</small>
+        </div>
+      </div>
+    {% endfor %}
+  </main>
+
+  <footer>
+    <form class="subscribe" action="/subscribe" method="post">
+        <label>Subscribe for updates:</label>
+        <input type="email" name="email" placeholder="Your email" required>
+        <button type="submit">Join</button>
+    </form>
+    <p>Powered by NewsAPI.org | © 2025 GlobalBuzz</p>
+  </footer>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-container">
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Auto refresh every 30 min -->
+  <script>
+    setInterval(() => location.reload(), 1800000);
+  </script>
+</body>
+</html>
